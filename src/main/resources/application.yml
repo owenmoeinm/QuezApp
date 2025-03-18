@@ -1,0 +1,29 @@
+server:
+  max-http-request-header-size: 64KB
+spring:
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 2MB
+      enabled: true
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/quizapp
+    username: postgres
+    password: moein1379
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  elasticsearch:
+    uris: http://localhost:9200
+
+
+  data:
+    elasticsearch:
+      repositories:
+        enabled: true
+    jdbc:
+      dialect: postgresql

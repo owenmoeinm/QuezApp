@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Management</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .card_select {
+            transition: transform 0.3s ease-in-out;
+        }
+        .card_select:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        #form-container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-center">لیست دوره‌ها</h2>
+        <button id="show-form-btn" class="btn btn-success">ایجاد دوره جدید</button>
+    </div>
+
+    <div id="form-container" class="d-none p-4 border rounded shadow">
+        <h3 class="text-center">ایجاد دوره جدید</h3>
+        <form id="course-form" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="name" class="form-label">نام دوره</label>
+                <input type="text" name="name" class="form-control" id="name" required>
+            </div>
+            <div class="mb-3">
+                <label for="startTime" class="form-label">تاریخ شروع</label>
+                <input type="date" name="startTime" class="form-control" id="startTime" required>
+            </div>
+            <div class="mb-3">
+                <label for="endTime" class="form-label">تاریخ پایان</label>
+                <input type="date" name="endTime" class="form-control" id="endTime" required>
+            </div>
+            <div class="mb-3">
+                <label for="courseImage" class="form-label">تصویر دوره</label>
+                <input type="file" name="image" class="form-control" id="courseImage">
+            </div>
+            <button type="submit" class="btn btn-primary w-100">ثبت دوره</button>
+        </form>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-6 col-lg-4 mb-4" th:each="course : ${courses}">
+            <div class="card_select card border-0 shadow-lg h-100 bg-light">
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${course.getName()}"></h5>
+                    <p class="card-text"><strong>تاریخ شروع:</strong> <span th:text="${course.getStartDate()}"></span></p>
+                    <p class="card-text"><strong>تاریخ پایان:</strong> <span th:text="${course.getEndOfTerms()}"></span></p>
+                    <p class="card-text"><strong>دانشجویان ثبت‌نام شده:</strong> <span th:text="${course.getStudents()}"></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/js/course.js"></script>
+</body>
+</html>

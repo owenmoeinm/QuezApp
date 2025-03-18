@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Status List</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container mt-5">
+    <h2>Status List</h2>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+        <tr>
+            <th>نام</th>
+            <th>کدملی</th>
+            <th>وضعیت</th>
+            <th>نقش</th>
+            <th>عملیات</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="state : ${states}">
+            <td id="name" th:text="${state.fullName}"></td>
+            <td id="nationalCode" th:text="${state.nationalCode}"></td>
+            <td id="status" th:text="${state.status}"></td>
+            <td id="role" th:text="${state.roleName}"></td>
+            <td>
+                <button type="button" class="btn btn-danger" id="convert">
+                    تایید کاربر
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script src="/js/status_list.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
