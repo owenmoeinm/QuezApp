@@ -15,6 +15,7 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.time.LocalDate;
+import java.util.LinkedList;
 import java.util.List;
 
 @NoArgsConstructor
@@ -49,11 +50,8 @@ public class StudentDoc{
     @Field(type = FieldType.Date , format = DateFormat.year_month_day)
     private LocalDate createDate;
 
-    private List<String> courses;
-
     @PrePersist
     public void init(){
         this.status = State.VALIDATING.name();
     }
-
 }

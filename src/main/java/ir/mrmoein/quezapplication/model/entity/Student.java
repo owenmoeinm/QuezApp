@@ -17,8 +17,11 @@ import java.util.List;
 @Setter
 public class Student extends Person {
 
-    @ManyToMany(fetch = FetchType.LAZY , mappedBy = "students")
+    @ManyToMany(fetch = FetchType.LAZY , mappedBy = "students" )
     private List<Course> courses = new LinkedList<>();
+
+    @ManyToMany(fetch = FetchType.LAZY , mappedBy = "students")
+    private List<Exam> exams = new LinkedList<>();
 
     @Column
     private LocalDate createDate;

@@ -7,6 +7,7 @@ import lombok.Setter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDate;
+import java.util.LinkedList;
 import java.util.List;
 
 @Entity
@@ -22,11 +23,14 @@ public class Course extends BaseEntity<Long> {
     @Column
     private byte[] image;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne
     private Teacher teacher;
 
     @Column
     private LocalDate startDate;
+
+    @OneToMany(mappedBy = "category")
+    private List<ExamQuestion> questions = new LinkedList<>();
 
     @Column
     private LocalDate endOfTerms;
@@ -34,6 +38,12 @@ public class Course extends BaseEntity<Long> {
     @ManyToMany(fetch = FetchType.LAZY)
     private List<Student> students;
 
+    @OneToMany(mappedBy = "course")
+    private List<Exam> exams = new LinkedList<>();
+
+    public void setQuestions(ExamQuestion questions) {
+        this.questions.add(questions);
+    }
 
     public static CourseBuilder builder() {
         return new CourseBuilder();

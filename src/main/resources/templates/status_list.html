@@ -23,12 +23,18 @@
         </thead>
         <tbody>
         <tr th:each="state : ${states}">
-            <td id="name" th:text="${state.fullName}"></td>
-            <td id="nationalCode" th:text="${state.nationalCode}"></td>
-            <td id="status" th:text="${state.status}"></td>
-            <td id="role" th:text="${state.roleName}"></td>
+            <td th:text="${state.fullName}" class="fullName"></td>
+            <td th:text="${state.nationalCode}" class="nationalCode"></td>
+            <td th:text="${state.status}" class="status"></td>
+            <td th:text="${state.roleName}" class="roleName"></td>
             <td>
-                <button type="button" class="btn btn-danger" id="convert">
+                <button
+                        type="button"
+                        class="btn btn-danger convert"
+                        th:data-fullname="${state.fullName}"
+                        th:data-nationalcode="${state.nationalCode}"
+                        th:data-status="${state.status}"
+                        th:data-rolename="${state.roleName}">
                     تایید کاربر
                 </button>
             </td>

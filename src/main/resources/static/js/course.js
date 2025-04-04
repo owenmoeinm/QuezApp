@@ -26,7 +26,7 @@ document.getElementById("course-form").addEventListener("submit", async function
         });
 
         if (!response.ok) {
-            throw new Error("Failed to create course");
+            new Error("Failed to create course");
         }
 
         let result = await response.json();
@@ -34,7 +34,7 @@ document.getElementById("course-form").addEventListener("submit", async function
         location.reload();
 
     } catch (error) {
-        console.error("Error:", error);
+        new Error("Error: "+ error.message);
         alert("خطا در ایجاد دوره. لطفاً دوباره تلاش کنید.");
     }
 });
@@ -48,8 +48,8 @@ document.querySelectorAll(".card_select").forEach(card => {
         })
         if (!response.ok) throw Error("field fetch course edit !!!");
         let courseData = await response.json();
-        localStorage.setItem("course", JSON.stringify(courseData))
-        window.location.href = "/admin/course/view"
+        localStorage.setItem("course", JSON.stringify(courseData));
+        window.location.href = "/admin/course/view";
     });
 });
 

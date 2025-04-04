@@ -1,5 +1,6 @@
 package ir.mrmoein.quezapplication.exception;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -58,9 +59,13 @@ public class ExceptionHandlerProgram {
     public ResponseEntity<Object> notFoundException (NotFoundRequestException e ) {
         Map<String, Object> response = new HashMap<>();
         response.put("error", e.getMessage());
-        response.put("status", HttpStatus.FORBIDDEN.value());
-
+        response.put("status", HttpStatus.NOT_FOUND.value());
         return new ResponseEntity<>(response , HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<String> handleDuplicateKeyException(DataIntegrityViolationException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
 
 }

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پروفایل کاربر</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f8f9fa;
+        }
+
+        .profile-container {
+            max-width: 450px;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .profile-container:hover {
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .profile-image {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #007bff;
+            padding: 3px;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
+        }
+
+        .btn-primary {
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 16px;
+            transition: background 0.3s ease-in-out;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .navbar {
+            width: 100%;
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .content-wrapper {
+            margin-top: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">پروفایل استاد</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/dashboard">🏠 داشبورد</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/teacher">بازگشت به پنل</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="content-wrapper">
+    <div class="profile-container text-center">
+        <img id="userImage" class="profile-image" src="" alt="User Image">
+        <div class="mb-3">
+            <input type="text" id="name" class="form-control" placeholder="نام">
+        </div>
+        <div class="mb-3">
+            <input type="text" id="lastName" class="form-control" placeholder="نام خانوادگی">
+        </div>
+        <div class="mb-3">
+            <input type="text" id="nationalCode" class="form-control" placeholder="کد ملی" readonly>
+        </div>
+        <div class="mb-3">
+            <input type="email" id="email" class="form-control" placeholder="ایمیل">
+        </div>
+        <div class="mb-3">
+            <input type="date" id="dob" class="form-control">
+        </div>
+        <div class="mb-3">
+            <input type="file" id="imageInput" class="form-control" accept="image/*" onchange="previewImage()">
+        </div>
+        <button class="btn btn-primary w-100" onclick="saveProfile()">ذخیره تغییرات</button>
+    </div>
+</div>
+
+<script src="/js/profile.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

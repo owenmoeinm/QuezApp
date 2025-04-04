@@ -19,4 +19,6 @@ public interface SearchStudent extends ElasticsearchRepository<StudentDoc, UUID>
 
     List<StudentDoc> findByNationalCodeContaining(String nationalCode);
 
+    void deleteByNationalCode(String nationalCode);
+
 }

@@ -1,6 +1,7 @@
 package ir.mrmoein.quezapplication.service.Impl;
 
 
+import ir.mrmoein.quezapplication.controller.admin.AdminController;
 import ir.mrmoein.quezapplication.exception.NotAccessException;
 import ir.mrmoein.quezapplication.exception.NotFoundRequestException;
 import ir.mrmoein.quezapplication.exception.RegisterFailedException;
@@ -10,17 +11,16 @@ import ir.mrmoein.quezapplication.model.dto.*;
 import ir.mrmoein.quezapplication.model.entity.*;
 import ir.mrmoein.quezapplication.repository.elastic.SearchStudent;
 import ir.mrmoein.quezapplication.repository.elastic.SearchTeacher;
-import ir.mrmoein.quezapplication.repository.jpa.RoleRepository;
-import ir.mrmoein.quezapplication.repository.jpa.StudentRepository;
-import ir.mrmoein.quezapplication.repository.jpa.TeacherRepository;
-import ir.mrmoein.quezapplication.repository.jpa.UserRepository;
+import ir.mrmoein.quezapplication.repository.jpa.*;
 import ir.mrmoein.quezapplication.service.UserService;
 import ir.mrmoein.quezapplication.util.DTOService;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -35,9 +35,12 @@ public class UserServiceImpl implements UserService {
     private final SearchTeacher searchTeacher;
     private final SearchStudent searchStudent;
     private final RoleRepository roleRepository;
+    private final DTOService dtoService;
+    private final OutBoxRepository outBoxRepository;
+    private final Logger logger = LoggerFactory.getLogger(AdminController.class);
 
     public UserServiceImpl(UserRepository userRepository, PasswordEncoder bCrypt, TeacherRepository teaccherRepository,
-                           StudentRepository studentRepository, SearchTeacher searchTeacher, SearchStudent searchStudent, RoleRepository roleRepository) {
+                           StudentRepository studentRepository, SearchTeacher searchTeacher, SearchStudent searchStudent, RoleRepository roleRepository, DTOService dtoService, OutBoxRepository outBoxRepository) {
         this.userRepository = userRepository;
         this.bCrypt = bCrypt;
         this.teacherRepository = teaccherRepository;
@@ -45,31 +48,40 @@ public class UserServiceImpl implements UserService {
         this.searchTeacher = searchTeacher;
         this.searchStudent = searchStudent;
         this.roleRepository = roleRepository;
+        this.dtoService = dtoService;
+        this.outBoxRepository = outBoxRepository;
     }
 
     @Override
     @Transactional(rollbackOn = Exception.class)
     public boolean registerTeacher(TeacherRegisterRequest requestDTO) {
         try {
-            Teacher teacher = DTOService.getRequestRegisterTeacher(requestDTO);
-            User user = teacher.getUserId();
-            user.setPassword(bCrypt.encode(user.getPassword()));
-            user.setRoles(getRole(RoleName.ROLE_TEACHER));
-            user.setEnable(Boolean.FALSE);
-            User save = userRepository.save(user);
-            teacher.setUserId(save);
-            Teacher entity = teacherRepository.save(teacher);
-            TeacherDoc teacherDoc = TeacherDoc.builder()
-                    .fullName(entity.getName() + " " + entity.getLastName())
-                    .dob(entity.getDob())
-                    .userId(entity.getUserId().getId().toString())
-                    .email(entity.getEmail())
-                    .role(RoleName.ROLE_TEACHER.name())
-                    .status(State.VALIDATING.name())
-                    .nationalCode(entity.getNationalCode())
-                    .build();
-            searchTeacher.save(teacherDoc);
-            return true;
+            Optional<TeacherDoc> teacher1 = searchTeacher.findByNationalCode(requestDTO.getNationalCode());
+            if (teacher1.isEmpty()) {
+                Teacher teacher = dtoService.getRequestRegisterTeacher(requestDTO);
+                User user = teacher.getUserId();
+                user.setPassword(bCrypt.encode(user.getPassword()));
+                user.setRoles(getRole(RoleName.ROLE_TEACHER));
+                user.setEnable(Boolean.FALSE);
+                User save = userRepository.save(user);
+                teacher.setUserId(save);
+                Teacher entity = teacherRepository.save(teacher);
+
+                OutboxEvent outBox = OutboxEvent.builder()
+                        .fullName(entity.getName() + " " + entity.getLastName())
+                        .userId(entity.getUserId().getId())
+                        .email(entity.getEmail())
+                        .role(RoleName.ROLE_TEACHER.name())
+                        .nationalCode(entity.getNationalCode())
+                        .generalDate(entity.getDob())
+                        .build();
+
+                outBoxRepository.save(outBox);
+
+                return true;
+            } else {
+                throw new DataIntegrityViolationException("this user is already exist !!!");
+            }
         } catch (Exception e) {
             throw new RegisterFailedException("please again signup !!! " + e.getMessage());
         }
@@ -79,26 +91,31 @@ public class UserServiceImpl implements UserService {
     @Transactional(rollbackOn = Exception.class)
     public boolean registerStudent(StudentRegisterRequest requestDTO) {
         try {
-            Student student = DTOService.getRequestRegisterStudent(requestDTO);
-            User user = student.getUserId();
-            user.setPassword(bCrypt.encode(user.getPassword()));
-            user.setRoles(getRole(RoleName.ROLE_STUDENT));
-            user.setEnable(Boolean.FALSE);
-            User save = userRepository.save(user);
-            student.setUserId(save);
-            Student entity = studentRepository.save(student);
-            StudentDoc studentDoc = StudentDoc.builder()
-                    .fullName(entity.getName() + " " + entity.getLastName())
-                    .userId(entity.getUserId().getId().toString())
-                    .email(entity.getEmail())
-                    .status(entity.getStatus().name())
-                    .role(RoleName.ROLE_STUDENT.name())
-                    .status(State.VALIDATING.name())
-                    .nationalCode(entity.getNationalCode())
-                    .build();
-            searchStudent.save(studentDoc);
-            return true;
-        } catch (IOException e) {
+            Optional<StudentDoc> student1 = searchStudent.findByNationalCode(requestDTO.getNationalCode());
+            if (student1.isEmpty()) {
+                Student student = dtoService.getRequestRegisterStudent(requestDTO);
+                User user = student.getUserId();
+                user.setPassword(bCrypt.encode(user.getPassword()));
+                user.setRoles(getRole(RoleName.ROLE_STUDENT));
+                user.setEnable(Boolean.FALSE);
+                User save = userRepository.save(user);
+                student.setUserId(save);
+                Student entity = studentRepository.save(student);
+                OutboxEvent outBox = OutboxEvent.builder()
+                        .fullName(entity.getName() + " " + entity.getLastName())
+                        .userId(entity.getUserId().getId())
+                        .email(entity.getEmail())
+                        .role(RoleName.ROLE_STUDENT.name())
+                        .nationalCode(entity.getNationalCode())
+                        .generalDate(entity.getCreateDate())
+                        .build();
+
+                outBoxRepository.save(outBox);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
             throw new NotAccessException("please again signup !!!");
         }
     }
@@ -144,7 +161,7 @@ public class UserServiceImpl implements UserService {
         List<StudentDoc> students = searchStudent.findByStatus(State.VALIDATING.name());
         List<TeacherDoc> teachers = searchTeacher.findByStatus(State.VALIDATING.name());
 
-        return DTOService.concatList(students, teachers);
+        return dtoService.concatList(students, teachers);
     }
 
     @Override
@@ -152,34 +169,38 @@ public class UserServiceImpl implements UserService {
         List<StudentDoc> students = searchStudent.findByFullNameContains(value);
         List<TeacherDoc> teachers = searchTeacher.findByFullNameContains(value);
 
-        return DTOService.concatList(students, teachers);
+        return dtoService.concatList(students, teachers);
     }
 
     @Override
     public ProfileDTO getProfileUser(String nationalCode) {
-        Optional<Student> student = studentRepository.findByNationalCode(nationalCode);
-        Optional<Teacher> teacher = teacherRepository.findByNationalCode(nationalCode);
+        try {
+            Optional<Student> student = studentRepository.findByNationalCode(nationalCode);
+            Optional<Teacher> teacher = teacherRepository.findByNationalCode(nationalCode);
 
-        if (student.isPresent()) {
-            return ProfileDTO.builder()
-                    .fullName(student.get().getName() + " " + student.get().getLastName())
-                    .image(student.get().getImage())
-                    .State(student.get().getStatus().name())
-                    .email(student.get().getEmail())
-                    .nationalCode(student.get().getNationalCode())
-                    .build();
-        } else if (teacher.isPresent()) {
-            return ProfileDTO.builder()
-                    .fullName(teacher.get().getName() + " " + teacher.get().getLastName())
-                    .image(teacher.get().getImage())
-                    .State(teacher.get().getStatus().name())
-                    .email(teacher.get().getEmail())
-                    .nationalCode(teacher.get().getNationalCode())
-                    .build();
-        } else {
-            throw new NotFoundRequestException("this Request Not valid !!!");
+            if (student.isPresent()) {
+                return ProfileDTO.builder()
+                        .fullName(student.get().getName() + " " + student.get().getLastName())
+                        .image(student.get().getImage())
+                        .State(student.get().getStatus().name())
+                        .email(student.get().getEmail())
+                        .nationalCode(student.get().getNationalCode())
+                        .build();
+            } else if (teacher.isPresent()) {
+                return ProfileDTO.builder()
+                        .fullName(teacher.get().getName() + " " + teacher.get().getLastName())
+                        .image(teacher.get().getImage())
+                        .State(teacher.get().getStatus().name())
+                        .email(teacher.get().getEmail())
+                        .nationalCode(teacher.get().getNationalCode())
+                        .build();
+            } else {
+                throw new NotFoundRequestException("this request failed !!!");
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return null;
         }
-
     }
 
     @Override

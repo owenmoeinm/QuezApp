@@ -1,6 +1,5 @@
 package ir.mrmoein.quezapplication.listener;
 
-import ir.mrmoein.quezapplication.model.dto.UserRequestDTO;
 import ir.mrmoein.quezapplication.model.entity.Authority;
 import ir.mrmoein.quezapplication.model.entity.Role;
 import ir.mrmoein.quezapplication.model.entity.RoleName;

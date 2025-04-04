@@ -20,4 +20,6 @@ public interface CourseService{
 
     List<CoursesDTO> getAll();
 
+    void remove(String name);
+
 }

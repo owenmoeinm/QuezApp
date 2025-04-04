@@ -1,6 +1,6 @@
 package ir.mrmoein.quezapplication.service.Impl;
 
-import ir.mrmoein.quezapplication.controller.AdminController;
+import ir.mrmoein.quezapplication.controller.admin.AdminController;
 import ir.mrmoein.quezapplication.exception.NotEnableUserException;
 import ir.mrmoein.quezapplication.model.entity.Role;
 import ir.mrmoein.quezapplication.model.entity.User;

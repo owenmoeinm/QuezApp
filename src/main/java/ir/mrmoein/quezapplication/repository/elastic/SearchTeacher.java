@@ -17,4 +17,6 @@ public interface SearchTeacher extends ElasticsearchRepository<TeacherDoc, UUID>
 
     List<TeacherDoc> findByNationalCodeContaining(String nationalCode);
 
+    void deleteByNationalCode(String nationalCode);
+
 }

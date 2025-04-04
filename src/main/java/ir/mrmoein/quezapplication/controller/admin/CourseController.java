@@ -1,4 +1,4 @@
-package ir.mrmoein.quezapplication.controller;
+package ir.mrmoein.quezapplication.controller.admin;
 
 import ir.mrmoein.quezapplication.model.dto.*;
 import ir.mrmoein.quezapplication.service.CourseService;
@@ -62,7 +62,7 @@ public class CourseController {
         return new ModelAndView("course_edit");
     }
 
-    @PostMapping("/selected")
+    @GetMapping("/selected")
     public ResponseEntity<List<RequestSelectedUserDTO>> selected(@RequestParam("query") String query) {
         List<RequestSelectedUserDTO> users = userService.searchSelected(query);
         return ResponseEntity.ok(users);
@@ -70,12 +70,17 @@ public class CourseController {
 
     @PutMapping(value = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ResponseCourseDTO> update(@ModelAttribute RequestUpdateCourse dto) {
+        ResponseCourseDTO course = courseService.update(dto);
+        return ResponseEntity.ok(course);
+    }
+
+    @DeleteMapping("/remove")
+    public ResponseEntity<Void> removeCourse(@RequestParam String name) {
         try {
-            ResponseCourseDTO course = courseService.update(dto);
-            return ResponseEntity.ok(course);
+            courseService.remove(name);
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
-            e.getStackTrace();
-            return null;
+            return ResponseEntity.badRequest().build();
         }
     }
 

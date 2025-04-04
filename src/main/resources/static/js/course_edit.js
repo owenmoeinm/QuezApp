@@ -1,10 +1,10 @@
 let selectedField = "";
 let selectedStudents = [];
-let selectedTeacher = "";
+let teacherNationalCode = "";
 
 document.addEventListener("DOMContentLoaded", function () {
-    const teacher = document.getElementById("teacher");
-    const students = document.getElementById("students");
+    const teacher = document.getElementById("input_teacher");
+    const students = document.getElementById("input_student");
     const startDate = document.getElementById("startDate");
     const endDate = document.getElementById("endDate");
     const image = document.getElementById("image");
@@ -21,6 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
         teacher.value = course.teacher;
         selectedStudents = Array.isArray(course.students) ? course.students : "NO STUDENT";
         students.value = selectedStudents.length > 0 ? selectedStudents.join(", ") : "";
+        teacherNationalCode = course.teacherCode;
 
         startDate.value = course.startDate;
         endDate.value = course.endOfTerms;
@@ -42,7 +43,7 @@ document.getElementById("students").addEventListener("click", function () {
 });
 
 function fetchResults(query) {
-    fetch(`/admin/course/selected?query=${query}`, {method: "POST"})
+    fetch(`/admin/course/selected?query=${query}`, {method: "GET"})
         .then(response => {
             if (!response.ok) {
                 throw new Error("خطا در دریافت اطلاعات");
@@ -84,17 +85,17 @@ function showResults(items, isMultiSelect) {
                     selectedStudents.push(item.nationalCode);
                     listItem.style.backgroundColor = "#d1e7dd";
                 } else {
-                    selectedStudents.filter(code => code !== item.nationalCode)
+                    selectedStudents = selectedStudents.filter(nc => nc !== item.nationalCode);
                     listItem.style.backgroundColor = "";
                 }
-                document.getElementById("students").value = selectedStudents.join(", ");
+                document.getElementById("input_student").value = selectedStudents.join(", ");
             } else {
-                document.getElementById("teacher").value = item.nationalCode;
-                selectedTeacher = item.nationalCode;
+                document.getElementById("input_teacher").value = item.nationalCode;
                 document.querySelectorAll(".list-group-item").forEach(el => el.style.backgroundColor = "");
                 listItem.style.backgroundColor = "#d1e7dd";
                 closeSearch();
             }
+            console.log(selectedStudents)
         };
 
         resultList.appendChild(listItem);
@@ -119,44 +120,72 @@ document.getElementById('imageUpload').addEventListener('change', function (even
     }
 });
 
-document.getElementById("form").addEventListener("submit", () => {
-    console.log("در حال ارسال اطلاعات");
+document.getElementById("form").addEventListener("submit", (event) => {
+    event.preventDefault(); // جلوگیری از ارسال فرم پیش‌فرض
+
+    console.log(" ارسال اطلاعات برای به‌روزرسانی دوره");
 
     let formData = new FormData();
     formData.append("name", document.getElementById("courseName").value);
-    formData.append("teacher", selectedTeacher);
-    formData.append("students", JSON.stringify(selectedStudents));
+    formData.append("teacher", document.getElementById("input_teacher").value);
     formData.append("startDate", document.getElementById("startDate").value);
     formData.append("endOfTerms", document.getElementById("endDate").value);
-    formData.append("teacherCode", teacherNationalCode);
+    formData.append("students", JSON.stringify(selectedStudents));
+
+    if (teacherNationalCode === "NO TEACHER") {
+        formData.append("teacherCode", teacherNationalCode)
+        teacherNationalCode = document.getElementById("input_teacher").value
+    }else if (document.getElementById("input_teacher").value.startsWith("0")){
+        teacherNationalCode = document.getElementById("input_teacher").value
+        formData.append("teacherCode", teacherNationalCode)
+    } else {
+        formData.append("teacherCode", teacherNationalCode)
+    }
 
     let imageInput = document.getElementById("imageUpload");
     if (imageInput && imageInput.files.length > 0) {
         formData.append("image", imageInput.files[0]);
-    } else {
-        throw new Error("image is null")
     }
-    console.log(formData)
+
     fetch("/admin/course/update", {
-        method: "POST",
+        method: "PUT",
         body: formData
     })
         .then(response => {
             if (!response.ok) {
-                throw new Error("خطا در ارسال اطلاعات");
+                throw new Error(`خطا در ارسال اطلاعات. کد وضعیت: ${response.status}`);
             }
             return response.json();
         })
         .then(data => {
-            console.log("پاسخ سرور:", data);
             alert("دوره با موفقیت به‌روز شد.");
-            location.reload();
+            localStorage.setItem("course", JSON.stringify(data))
+            location.reload()
         })
         .catch(error => {
-            console.error("خطا در ارسال:", error);
+            console.error(" خطا در ارسال:", error);
             alert("مشکلی در ارسال اطلاعات رخ داده است.");
         });
 });
+
+document.getElementById("delete").addEventListener("click" , () => {
+    let name = document.getElementById("courseName").value
+    let confirmDelete = confirm(`Are you sure you want to delete "${name}" ?`);s
+
+    if (!confirmDelete) return;
+
+    fetch(`/admin/course/remove?name=${encodeURIComponent(name)}` , {
+        method : "DELETE"
+    }).then((response) => {
+        if (response.ok){
+            alert("delete success :)")
+            window.location.href = "/admin/course"
+        }
+    }).catch(error => {
+        alert("delete failed !!!")
+    })
+
+})
 
 function confirmSelection() {
     closeSearch();

@@ -1,35 +1,34 @@
 
-const fullName = document.getElementById("name").innerText
-const nationalCode = document.getElementById("nationalCode").innerText
-const status = document.getElementById("status").innerText
-const roleName = document.getElementById("role").innerText
+document.querySelectorAll(".convert").forEach(button => {
+    button.addEventListener("click", (event) => {
+        const button = event.target;
 
-const convert = document.getElementById("convert")
+        let form = new FormData();
+        form.append("fullName", button.getAttribute("data-fullname"));
+        form.append("nationalCode", button.getAttribute("data-nationalcode"));
+        form.append("status", button.getAttribute("data-status"));
+        form.append("roleName", button.getAttribute("data-rolename"));
 
-convert.addEventListener("click", () => {
-
-    let form = new FormData();
-    form.append("fullName", fullName);
-    form.append("nationalCode", nationalCode);
-    form.append("status", status)
-    form.append("roleName", roleName)
-
-    fetch('/admin/convert', {
-        method: 'POST',
-        body: form
-    })
-        .then(response => response.text())
-        .then(data => {
-            console.log('نتیجه سرور:', data);
-            convert.classList.replace("btn-danger", "btn-success");
-            location.reload();
-            convert.textContent = "تأیید شد";
-            convert.disabled = true;
+        fetch('/admin/convert', {
+            method: 'POST',
+            body: form
         })
-        .catch(error => {
-            console.error('خطا:', error);
-            alert('مشکلی پیش آمد، لطفاً دوباره تلاش کنید.');
-        });
+            .then(response => response.text())
+            .then(data => {
+                console.log('نتیجه سرور:', data);
 
-})
+                // دکمه‌ای که کلیک شده را تغییر دهید
+                const convertButton = event.target;
+                convertButton.classList.replace("btn-danger", "btn-success");
+                convertButton.textContent = "تأیید شد";
+                convertButton.disabled = true;
+
+                location.reload(); // اگر واقعاً نیاز است صفحه رفرش شود
+            })
+            .catch(error => {
+                console.error('خطا:', error);
+                alert('مشکلی پیش آمد، لطفاً دوباره تلاش کنید.');
+            });
+    });
+});
 

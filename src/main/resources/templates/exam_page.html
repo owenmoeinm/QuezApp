@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مدیریت آزمون‌ها</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        #examDetails {
+            margin-top: 20px;
+        }
+        #createExamForm {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">پنل معلم</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/dashboard">🏠 داشبورد</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link btn btn-danger text-white" href="/logout">خروج</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4">مدیریت آزمون‌ها</h2>
+
+    <button class="btn btn-primary mb-3" onclick="toggleExamForm()">➕ ایجاد آزمون جدید</button>
+
+    <form id="createExamForm" class="mb-4">
+        <div class="mb-3">
+            <label class="form-label">عنوان آزمون</label>
+            <input type="text" class="form-control" id="examTitle" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">توضیحات آزمون</label>
+            <textarea class="form-control" id="examDescription" rows="3"></textarea>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">تاریخ شروع</label>
+            <input type="date" class="form-control" id="examStartDate" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">ساعت شروع</label>
+            <input type="time" class="form-control" id="examStartTime">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">تاریخ پایان</label>
+            <input type="date" class="form-control" id="examEndDate" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">ساعت پایان</label>
+            <input type="time" class="form-control" id="examEndTime">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">مدت زمان پاسخ‌دهی (دقیقه)</label>
+            <input type="number" class="form-control" id="examDuration" required min="1">
+        </div>
+        <button type="submit" class="btn btn-success">ایجاد آزمون</button>
+    </form>
+
+
+
+    <div id="examList">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>عنوان آزمون</th>
+                <th>تاریخ شروع</th>
+                <th>ساعت شروع</th>
+                <th>تاریخ پایان</th>
+                <th>ساعت پایان</th>
+                <th>مدت زمان پاسخ‌دهی (دقیقه)</th>
+                <th>عملیات</th>
+            </tr>
+            </thead>
+            <tbody id="examDetails">
+
+            </tbody>
+        </table>
+
+        <div class="alert alert-warning text-center" style="display: none" id="NoPresentMessage" role="alert">
+            هنوز آزمونی برگزار نشده است.
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/exam.js"></script>
+
+
+</body>
+</html>

@@ -6,7 +6,6 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @SuperBuilder
 @Getter
@@ -24,7 +23,7 @@ public class CoursesDTO {
 
     private LocalDate endOfTerms;
 
-    private List<String> students;
+    private int students;
 
 
 }

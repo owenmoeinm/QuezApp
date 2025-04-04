@@ -20,9 +20,9 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             window.location.href = "/start";
         } catch (error) {
-            console.error("خطا در ارسال درخواست:", error);
+            location.reload()
+            alert(error.message)
             document.getElementById("globalError").innerText = error.message;
-            document.getElementById("globalError").classList.remove("d-none");
         }
     });
 

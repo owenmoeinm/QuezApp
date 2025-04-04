@@ -16,7 +16,6 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 

@@ -1,7 +1,10 @@
 package ir.mrmoein.quezapplication.service.Impl;
 
+import ir.mrmoein.quezapplication.controller.admin.AdminController;
 import ir.mrmoein.quezapplication.exception.NotFoundRequestException;
 import ir.mrmoein.quezapplication.model.document.CourseDoc;
+import ir.mrmoein.quezapplication.model.document.StudentDoc;
+import ir.mrmoein.quezapplication.model.document.TeacherDoc;
 import ir.mrmoein.quezapplication.model.dto.CoursesDTO;
 import ir.mrmoein.quezapplication.model.dto.RequestCourseDTO;
 import ir.mrmoein.quezapplication.model.dto.RequestUpdateCourse;
@@ -17,8 +20,9 @@ import ir.mrmoein.quezapplication.repository.jpa.CourseRepository;
 import ir.mrmoein.quezapplication.repository.jpa.StudentRepository;
 import ir.mrmoein.quezapplication.repository.jpa.TeacherRepository;
 import ir.mrmoein.quezapplication.service.CourseService;
-import ir.mrmoein.quezapplication.util.DTOService;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +43,7 @@ public class CourseServiceImpl implements CourseService {
     private final SearchCourseRepo searchCourse;
     private final SearchStudent searchStudent;
     private final SearchTeacher searchTeacher;
+    private final Logger logger = LoggerFactory.getLogger(AdminController.class);
 
     @Autowired
     public CourseServiceImpl(CourseRepository courseRepository, SearchCourseRepo searchCourse, TeacherRepository teacherRepository, StudentRepository studentRepository, SearchStudent searchStudent, SearchTeacher searchTeacher) {
@@ -88,7 +93,7 @@ public class CourseServiceImpl implements CourseService {
                     .name(course.get().getName())
                     .startDate(course.get().getStartDate())
                     .endOfTerms(course.get().getEndOfTerms())
-                    .teacherCode(course.get().getTeacher().getNationalCode())
+                    .teacherCode(course.get().getTeacher() == null ? "NO TEACHER" : course.get().getTeacher().getNationalCode())
                     .teacher(course.get().getTeacher() != null ? course.get().getTeacher().getName() + " " + course.get().getTeacher().getLastName() : "No Teacher")
                     .students(course.get().getStudents() != null ? course.get().getStudents().stream().map(Person::getNationalCode).collect(Collectors.toList()) : new ArrayList<>())
                     .image(course.get().getImage())
@@ -107,35 +112,44 @@ public class CourseServiceImpl implements CourseService {
 
             Teacher teacher = null;
 
-            if (dto.getTeacherCode().equals("null")) {
-                 teacher = teacherRepository.findByNationalCode(dto.getTeacher()).orElseThrow(() ->
+            if (dto.getTeacherCode().equals("NO TEACHER")) {
+                teacher = teacherRepository.findByNationalCode(dto.getTeacher()).orElseThrow(() ->
                         new NotFoundRequestException("Teacher Not Found !!!"));
             } else {
-                 teacher = teacherRepository.findByNationalCode(dto.getTeacherCode()).orElseThrow(() ->
-                         new NotFoundRequestException("Teacher Not Found !!!"));
+                teacher = teacherRepository.findByNationalCode(dto.getTeacherCode()).orElseThrow(() ->
+                        new NotFoundRequestException("Teacher Not Found !!!"));
             }
             List<String> nationalCodes = dto.getStudents();
             List<String> codes = nationalCodes.stream().map((code) -> code.replace("[", "").replace("]", "").replace("\"", "")).toList();
 
             List<Student> students = new LinkedList<>();
-            for (String nationalCode : codes) {
-                students.add(studentRepository.findByNationalCode(nationalCode).orElseThrow());
+            if (!dto.getStudents().get(0).equals("[]")) {
+                for (String nationalCode : codes) {
+                    students.add(studentRepository.findByNationalCode(nationalCode).orElseThrow());
+                }
             }
 
+            course.setImage(dto.getImage() == null ? course.getImage() : dto.getImage().getBytes());
             course.setTeacher(teacher);
             course.setStartDate(dto.getStartDate());
             course.setEndOfTerms(dto.getEndOfTerms());
             course.setStudents(students);
             courseRepository.save(course);
+            CourseDoc courseDoc = searchCourse.findByName(course.getName()).orElseThrow(() -> new NotFoundRequestException("course Not found!!!"));
+            courseDoc.setStudents(students.stream().map(Person::getNationalCode).toList());
+            courseDoc.setTeacher(teacher.getName());
+            searchCourse.save(courseDoc);
 
             teacher.setCourses(course);
             for (Student student : students) {
                 student.setCourses(course);
                 studentRepository.save(student);
-                searchStudent.save(DTOService.convertSearchStudent(student));
+                StudentDoc studentDoc = searchStudent.findByNationalCode(student.getNationalCode()).orElseThrow(() -> new NotFoundRequestException("student not found in elastic!!!"));
+                searchStudent.save(studentDoc);
             }
             teacherRepository.save(teacher);
-            searchTeacher.save(DTOService.convertSearchTeacher(teacher));
+            TeacherDoc teacherDoc = searchTeacher.findByNationalCode(teacher.getNationalCode()).orElseThrow(() -> new NotFoundRequestException("teacher document not found !!!"));
+            searchTeacher.save(teacherDoc);
 
             return findCourse(dto.getName());
         } catch (Exception e) {
@@ -158,7 +172,18 @@ public class CourseServiceImpl implements CourseService {
                         .startDate(course.getStartDate())
                         .endOfTerms(course.getEndOfTerms())
                         .teacher(course.getTeacher() != null ? course.getTeacher() : "NO TEACHER")
-                        .students(course.getStudents() != null ? course.getStudents() : new ArrayList<>())
+                        .students(course.getStudents() != null ? course.getStudents().size() : 0)
                         .build()).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(rollbackOn = Exception.class)
+    public void remove(String name) {
+        try {
+            courseRepository.deleteByName(name);
+            searchCourse.deleteByName(name);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
     }
 }
