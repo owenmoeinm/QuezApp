@@ -9,7 +9,6 @@ import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 @NoArgsConstructor
@@ -30,8 +29,14 @@ public class Exam extends BaseEntity<Long> {
 
     private Long duration;
 
+    @OneToMany(mappedBy = "exam" , fetch = FetchType.LAZY)
+    private List<StudentExam> studentExam;
+
     @ManyToOne
     private Course course;
+
+    @Enumerated(EnumType.STRING)
+    private Visit visit;
 
     @Enumerated(EnumType.STRING)
     private CurrentExam state;
@@ -48,7 +53,11 @@ public class Exam extends BaseEntity<Long> {
 
     @PrePersist
     public void init() {
+        this.visit = Visit.UNSEEN;
         this.state = CurrentExam.UPCOMING;
     }
 
+    public void addStudent(Student students) {
+        this.students.add(students);
+    }
 }

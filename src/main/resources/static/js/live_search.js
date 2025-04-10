@@ -1,7 +1,7 @@
 const search = document.getElementById("searchInput");
 const userList = document.getElementById("userList");
 
-let role_name= null;
+let role_name = null;
 
 search.addEventListener("keyup", async function () {
     let query = this.value.trim();
@@ -17,13 +17,21 @@ search.addEventListener("keyup", async function () {
         const data = await response.json();
         userList.innerHTML = '';
 
-        if (data && data.length > 0) {
-            data.forEach(dto => {
-                const userItem = document.createElement("li");
-                userItem.classList.add("list-group-item", "border", "rounded", "mb-2", "p-3", "shadow-sm");
-                userItem.style.cursor = "pointer";
+        loadUser(data)
+    } catch (error) {
+        console.error("Error fetching search results:", error);
+        userList.innerHTML = '<li class="list-group-item text-danger text-center">Error fetching search results</li>';
+    }
+});
 
-                userItem.innerHTML = `
+function loadUser(data) {
+    if (data && data.length > 0) {
+        data.forEach(dto => {
+            const userItem = document.createElement("li");
+            userItem.classList.add("list-group-item", "border", "rounded", "mb-2", "p-3", "shadow-sm");
+            userItem.style.cursor = "pointer";
+
+            userItem.innerHTML = `
                         <div class="user-select-none d-flex flex-column">
                             <h5 class="fw-bold text-primary">${dto.fullName}</h5>
                             <p class="mb-1"><strong>National Code:</strong> ${dto.nationalCode}</p>
@@ -32,43 +40,38 @@ search.addEventListener("keyup", async function () {
                         </div>
                     `;
 
-                userList.appendChild(userItem);
+            userList.appendChild(userItem);
 
-                userItem.addEventListener("click", function (message) {
-                    role_name = document.getElementById("role").innerText
+            userItem.addEventListener("click", function (message) {
+                role_name = document.getElementById("role").innerText
 
-                    fetch(`/admin/profile?nationalCode=${encodeURIComponent(dto.nationalCode)}`, {
-                        method: "GET",
-                        headers: {"Content-Type": "application/json"}
+                fetch(`/admin/profile?nationalCode=${encodeURIComponent(dto.nationalCode)}`, {
+                    method: "GET",
+                    headers: {"Content-Type": "application/json"}
+                })
+                    .then(response => {
+                        if (!response.ok) throw new Error("Failed to fetch profile");
+                        return response.json();
                     })
-                        .then(response => {
-                            if (!response.ok) throw new Error("Failed to fetch profile");
-                            return response.json();
-                        })
-                        .then(profile => {
-                            showProfile(profile);
-                        })
-                        .catch(error => {
-                            console.error("Request failed:", error.message);
-                            if (error.message.includes("404")) {
-                                alert("موردی یافت نشد!");
-                            } else if (error.message.includes("403")) {
-                                alert("شما اجازه دسترسی ندارید!");
-                            } else {
-                                alert("خطایی رخ داده است!");
-                            }
-                        })
-                });
+                    .then(profile => {
+                        showProfile(profile);
+                    })
+                    .catch(error => {
+                        console.error("Request failed:", error.message);
+                        if (error.message.includes("404")) {
+                            alert("موردی یافت نشد!");
+                        } else if (error.message.includes("403")) {
+                            alert("شما اجازه دسترسی ندارید!");
+                        } else {
+                            alert("خطایی رخ داده است!");
+                        }
+                    })
             });
-        } else {
-            userList.innerHTML = '<li class="list-group-item text-danger text-center">No users found</li>';
-        }
-
-    } catch (error) {
-        console.error("Error fetching search results:", error);
-        userList.innerHTML = '<li class="list-group-item text-danger text-center">Error fetching search results</li>';
+        });
+    } else {
+        userList.innerHTML = '<li class="list-group-item text-danger text-center">No users found</li>';
     }
-});
+}
 
 function showProfile(profile) {
     let profileContainer = document.getElementById("profileContainer");
@@ -113,12 +116,12 @@ function removeUser() {
 
     console.log(role_name)
 
-    fetch(`/admin/remove?nationalCode=${encodeURIComponent(nationalCode)}&role=${encodeURIComponent(role_name)}` , {
-        method : "DELETE"
-    }) .then(response => {
-        if (response.ok){
+    fetch(`/admin/remove?nationalCode=${encodeURIComponent(nationalCode)}&role=${encodeURIComponent(role_name)}`, {
+        method: "DELETE"
+    }).then(response => {
+        if (response.ok) {
             alert(`success delete ${fullName}`)
-        }else{
+        } else {
             alert("delete is failed !!!")
             new Error("fetch is failed !!!")
         }
@@ -128,4 +131,24 @@ function removeUser() {
 
 function hideProfile() {
     document.getElementById("profileContainer").innerHTML = "";
+}
+
+async function invalidUser() {
+    try {
+        let response = await fetch("/admin/filter", {
+            method: "GET"
+        })
+
+        if (!response.ok) {
+            throw new Error(response.error)
+        }
+        let data = await response.json()
+
+        userList.innerHTML = "";
+        loadUser(data)
+
+    } catch (error) {
+        alert(error.message + "خطا : ")
+        console.log(error.message + "خطا : ")
+    }
 }

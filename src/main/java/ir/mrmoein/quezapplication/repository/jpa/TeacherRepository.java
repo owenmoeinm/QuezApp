@@ -1,10 +1,8 @@
 package ir.mrmoein.quezapplication.repository.jpa;
 
 import ir.mrmoein.quezapplication.model.entity.Teacher;
-import ir.mrmoein.quezapplication.model.entity.User;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 

@@ -24,9 +24,13 @@ public class ExamDTO {
 
     private String description;
 
+    private String visit;
+
     private LocalDateTime startDate;
 
     private LocalDateTime endDate;
+
+    private String score;
 
     private Long duration;
 

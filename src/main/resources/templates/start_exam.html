@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <title>برگزاری آزمون</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <style>
+        body {
+            direction: rtl;
+            padding: 20px;
+        }
+        .question-card {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h3 id="exam"></h3>
+    <p>زمان باقی‌مانده: <span id="timer" class="text-danger fw-bold">--:--</span></p>
+
+    <form id="examForm">
+        <div id="questionContainer">
+            <!-- سوالات اینجا inject می‌شن -->
+        </div>
+
+        <div class="d-flex justify-content-between mt-4">
+            <button type="button" id="prevBtn" class="btn btn-secondary">سوال قبلی</button>
+            <button type="button" id="nextBtn" class="btn btn-primary">سوال بعدی</button>
+            <button type="submit" class="btn btn-success">ارسال آزمون</button>
+        </div>
+    </form>
+</div>
+
+<script src="/js/start_exam.js"></script>
+
+</body>
+</html>

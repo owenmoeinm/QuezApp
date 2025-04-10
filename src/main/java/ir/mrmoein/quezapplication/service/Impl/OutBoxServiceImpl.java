@@ -1,9 +1,10 @@
 package ir.mrmoein.quezapplication.service.Impl;
 
 import ir.mrmoein.quezapplication.controller.admin.AdminController;
-import ir.mrmoein.quezapplication.model.entity.OutboxEvent;
+import ir.mrmoein.quezapplication.model.entity.*;
 import ir.mrmoein.quezapplication.repository.elastic.SearchStudent;
 import ir.mrmoein.quezapplication.repository.elastic.SearchTeacher;
+import ir.mrmoein.quezapplication.repository.jpa.ExamRepository;
 import ir.mrmoein.quezapplication.repository.jpa.OutBoxRepository;
 import ir.mrmoein.quezapplication.service.OutBoxService;
 import ir.mrmoein.quezapplication.util.DTOService;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -23,12 +25,14 @@ public class OutBoxServiceImpl implements OutBoxService {
     private final SearchStudent searchStudent;
     private final DTOService dtoService;
     private final Logger logger = LoggerFactory.getLogger(AdminController.class);
+    private final ExamRepository examRepository;
 
-    public OutBoxServiceImpl(OutBoxRepository repository, SearchTeacher searchTeacher, SearchStudent searchStudent, DTOService dtoService) {
+    public OutBoxServiceImpl(OutBoxRepository repository, SearchTeacher searchTeacher, SearchStudent searchStudent, DTOService dtoService, ExamRepository examRepository) {
         this.repository = repository;
         this.searchTeacher = searchTeacher;
         this.searchStudent = searchStudent;
         this.dtoService = dtoService;
+        this.examRepository = examRepository;
     }
 
     @Override
@@ -51,5 +55,21 @@ public class OutBoxServiceImpl implements OutBoxService {
             System.err.println("Failed save elastic: " + e.getMessage());
         }
 
+    }
+
+    @Override
+    @Scheduled(fixedRate = 50000)
+    @Transactional(rollbackOn = Exception.class)
+    public void checkExpireExam() {
+        List<Exam> exams = examRepository.findAll();
+        LocalDateTime now = LocalDateTime.now();
+        exams.forEach((exam) -> {
+            if (now.isAfter(exam.getEndDate())){
+                exam.setState(CurrentExam.FINISHED);
+                exam.setVisit(Visit.SEEN);
+            }
+            examRepository.save(exam);
+        });
+        logger.info("check expire exam. ");
     }
 }

@@ -21,4 +21,7 @@ public interface UserService {
 
     List<RequestSelectedUserDTO> searchSelected(String value);
 
+    List<StatusDTO> filter();
+
+
 }

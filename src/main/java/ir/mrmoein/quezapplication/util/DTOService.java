@@ -27,7 +27,7 @@ public interface DTOService {
 
     StudentCardDTO getStudentCard(Student student);
 
-    ExamDTO getExamDTO(Exam exam);
+    ExamDTO getExamDTO(Exam exam ,double score);
 
     Exam getExam(ExamDTO exam);
 
@@ -38,5 +38,17 @@ public interface DTOService {
     ExamQuestion getExamQuestion(RequestExamQuestionDTO dto , Course course , Exam exam);
 
     QuestionSearchDTO getQuestionSearchDTO(QuestionDoc questionDoc);
+
+    CoursesStudentDTO getStudentCourseDTO(Course course);
+
+    CoursePersonDTO getCoursePersonDTO(Course course);
+
+    ExamQuestionStartDTO getExamQuestionStartDTO(ExamQuestion examQuestion);
+
+    OptionDTO getOptionDTO(Option option);
+
+    StudentsExamDTO getStudentsExamDTO(Student student);
+
+    QuestionCorrectionDTO getQuestionCorrectionDTO(ExamQuestion question , AnswerQuestion answer , long studentExamId);
 
 }

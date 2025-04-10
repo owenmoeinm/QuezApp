@@ -105,4 +105,32 @@ public class ExamController {
         }
     }
 
+    @GetMapping("/students_exam")
+    public ModelAndView pageExam() {
+        return new ModelAndView("students_exam");
+    }
+
+    @GetMapping("/student_collection")
+    public ResponseEntity<List<StudentsExamDTO>> pageCollection(@RequestParam("exam") String exam) {
+        List<StudentsExamDTO> studentsExams = service.getStudentsExams(exam);
+        return ResponseEntity.ok(studentsExams);
+    }
+
+    @GetMapping("/seen_exam")
+    public ModelAndView seenExam() {
+        return new ModelAndView("seen_exam");
+    }
+
+    @PostMapping("/test_correction")
+    public ResponseEntity<List<QuestionCorrectionDTO>> test_correction(@RequestBody ExamCorrectionRequestDTO requestDTO) {
+        List<QuestionCorrectionDTO> questionCorrections = service.getQuestionCorrections(requestDTO);
+        return ResponseEntity.ok(questionCorrections);
+    }
+
+    @PostMapping("/submit_correction")
+    public ResponseEntity<?> correctionForm(@RequestBody List<RequestSubmitCorrection> requestDTO) {
+        service.correctionForm(requestDTO);
+        return ResponseEntity.ok().build();
+    }
+
 }

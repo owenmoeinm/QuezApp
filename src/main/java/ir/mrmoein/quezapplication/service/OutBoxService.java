@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 @Service
 public interface OutBoxService {
 
-    public void processOutboxEvents();
+    void processOutboxEvents();
+
+    void checkExpireExam();
 
 }

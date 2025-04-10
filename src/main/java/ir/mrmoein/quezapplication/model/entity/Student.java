@@ -26,6 +26,9 @@ public class Student extends Person {
     @Column
     private LocalDate createDate;
 
+    @OneToMany(mappedBy = "student" , fetch = FetchType.LAZY)
+    private List<StudentExam> studentExams;
+
     @Transient
     private int temporalScore;
 

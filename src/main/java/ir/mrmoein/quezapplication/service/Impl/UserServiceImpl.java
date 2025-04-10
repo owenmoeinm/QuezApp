@@ -223,6 +223,14 @@ public class UserServiceImpl implements UserService {
         )).collect(Collectors.toList());
     }
 
+    @Override
+    public List<StatusDTO> filter() {
+        List<StudentDoc> students = searchStudent.findByStatus(State.VALIDATING.name());
+        List<TeacherDoc> teachers = searchTeacher.findByStatus(State.VALIDATING.name());
+
+        return dtoService.concatList(students, teachers);
+    }
+
     private Set<Role> getRole(RoleName role) {
         Set<Role> roles = new HashSet<>();
         Role role1 = roleRepository.findByName(role.name());

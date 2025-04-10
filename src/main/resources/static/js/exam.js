@@ -203,10 +203,16 @@ function showExamDetails(id) {
             <strong>توضیحات:</strong> ${exam.description || "بدون توضیحات"}
             <br>
             <button class="btn btn-secondary btn-sm mt-2" onclick="showExamQuestions('${id}')">📋 نمایش سوالات</button>
+            <button class="btn btn-success btn-sm mt-2" onclick="showStudents('${id}')">تصحیح آزمون</button>
         </td>
     `;
 
     examRow.insertAdjacentElement("afterend", descriptionRow);
+}
+
+async function showStudents(id) {
+    localStorage.setItem("exam" , id)
+    window.location.href = "/teacher/exam/students_exam"
 }
 
 async function showExamQuestions(id) {

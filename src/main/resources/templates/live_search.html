@@ -8,16 +8,19 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
-<body class="bg-light">
-
 <div class="container mt-5">
     <h2 class="text-center mb-4">Live Search Users</h2>
-    <input type="text" id="searchInput" class="form-control" placeholder="Search for users..." autocomplete="off">
+
+    <!-- جستجو و دکمه valid -->
+    <div class="input-group">
+        <input type="text" id="searchInput" class="form-control" placeholder="Search for users..." autocomplete="off">
+        <button onclick="invalidUser()" class="btn btn-danger" id="loadValidUsers">کاربران نا معتبر</button>
+    </div>
+
     <ul class="list-group mt-3" id="userList"></ul>
 </div>
 
-<div id="profileContainer" class="container mt-4">
-</div>
+<div id="profileContainer" class="container mt-4"></div>
 
 <script src="/js/live_search.js"></script>
 

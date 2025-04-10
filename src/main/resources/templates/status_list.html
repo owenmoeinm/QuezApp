@@ -26,7 +26,7 @@
             <td th:text="${state.fullName}" class="fullName"></td>
             <td th:text="${state.nationalCode}" class="nationalCode"></td>
             <td th:text="${state.status}" class="status"></td>
-            <td th:text="${state.roleName}" class="roleName"></td>
+            <td th:text="${state.roleName == 'ROLE_TEACHER' ? 'Teacher' : 'Student'}" class="roleName"></td>
             <td>
                 <button
                         type="button"

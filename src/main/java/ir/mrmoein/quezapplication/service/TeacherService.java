@@ -1,10 +1,7 @@
 package ir.mrmoein.quezapplication.service;
 
 
-import ir.mrmoein.quezapplication.model.dto.CoursesTeacherDTO;
-import ir.mrmoein.quezapplication.model.dto.EditionProfileDTO;
-import ir.mrmoein.quezapplication.model.dto.StudentCardDTO;
-import ir.mrmoein.quezapplication.model.dto.TeacherProfileDTO;
+import ir.mrmoein.quezapplication.model.dto.*;
 
 import java.util.List;
 

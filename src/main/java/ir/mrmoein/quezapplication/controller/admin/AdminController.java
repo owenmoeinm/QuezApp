@@ -65,6 +65,12 @@ public class AdminController {
         return new ModelAndView("live_search");
     }
 
+    @GetMapping("/filter")
+    public ResponseEntity<List<StatusDTO>> filter() {
+        List<StatusDTO> filter = userService.filter();
+        return ResponseEntity.ok(filter);
+    }
+
     @GetMapping("/profile")
     public ResponseEntity<ProfileDTO> getProfile(@RequestParam String nationalCode) {
         ProfileDTO profile = userService.getProfileUser(nationalCode);

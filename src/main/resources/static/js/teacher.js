@@ -21,21 +21,25 @@ function showClassDetails(element) {
 }
 
 async function showStudents() {
-    await fetch(`/teacher/students?course=${encodeURIComponent(course_name)}`, {
-        method: "GET"
-    }).then((response) => {
+    try {
+        const response = await fetch(`/teacher/students?course=${encodeURIComponent(course_name)}`, {
+            method: "GET"
+        });
+
         if (!response.ok) {
-            throw new Error("خطا در دریافت اطلاعات!")
+            throw new Error("خطا در دریافت اطلاعات!");
         }
-        return response.json();
-    }).then((response) => {
-        localStorage.setItem("students" , JSON.stringify(response));
-        window.location.href = "/teacher/students/page"
-    }).catch(error => {
-        new Error(error.message);
-        console.log(error.message);
-    })
+
+        const data = await response.json();
+        localStorage.setItem("students", JSON.stringify(data));
+        window.location.href = "/teacher/students/page";
+
+    } catch (error) {
+        console.error(error.message);
+        alert("مشکلی در دریافت اطلاعات پیش آمده است.");
+    }
 }
+
 
 async function showExams() {
     await fetch("/teacher/exam" , {

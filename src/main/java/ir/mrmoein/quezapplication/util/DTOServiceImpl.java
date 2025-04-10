@@ -111,12 +111,14 @@ public class DTOServiceImpl implements DTOService {
     }
 
     @Override
-    public ExamDTO getExamDTO(Exam exam) {
+    public ExamDTO getExamDTO(Exam exam, double score) {
         return ExamDTO.builder()
                 .id(exam.getId())
                 .name(exam.getName())
                 .description(exam.getDescription())
                 .startDate(exam.getStartDate())
+                .visit(exam.getVisit().name())
+                .score(String.valueOf(score))
                 .endDate(exam.getEndDate())
                 .state(exam.getState())
                 .duration(exam.getDuration())
@@ -178,6 +180,64 @@ public class DTOServiceImpl implements DTOService {
                 .questionType(questionDoc.getQuestionType())
                 .question(questionDoc.getQuestion())
                 .score(String.valueOf(questionDoc.getScore()))
+                .build();
+    }
+
+    @Override
+    public CoursesStudentDTO getStudentCourseDTO(Course course) {
+        return CoursesStudentDTO.builder()
+                .id(String.valueOf(course.getId()))
+                .name(course.getName())
+                .image(course.getImage())
+                .build();
+    }
+
+    @Override
+    public CoursePersonDTO getCoursePersonDTO(Course course) {
+        return CoursePersonDTO.builder()
+                .image(course.getImage())
+                .name(course.getName())
+                .students(String.valueOf(course.getStudents().size()))
+                .startDate(course.getStartDate())
+                .endDate(course.getEndOfTerms())
+                .build();
+    }
+
+    @Override
+    public ExamQuestionStartDTO getExamQuestionStartDTO(ExamQuestion examQuestion) {
+        return ExamQuestionStartDTO.builder()
+                .id(examQuestion.getId())
+                .questionType(examQuestion.getQuestionType().name())
+                .question(examQuestion.getQuestion())
+                .score(examQuestion.getScore())
+                .build();
+    }
+
+    @Override
+    public OptionDTO getOptionDTO(Option option) {
+        return OptionDTO.builder()
+                .id(String.valueOf(option.getId()))
+                .value(option.getValue())
+                .build();
+    }
+
+    @Override
+    public StudentsExamDTO getStudentsExamDTO(Student student) {
+        return StudentsExamDTO.builder()
+                .id(String.valueOf(student.getId()))
+                .fullName(student.getName() + " " + student.getLastName())
+                .nationalCode(student.getNationalCode())
+                .build();
+    }
+
+    @Override
+    public QuestionCorrectionDTO getQuestionCorrectionDTO(ExamQuestion question, AnswerQuestion answer , long studentExamId) {
+        return QuestionCorrectionDTO.builder()
+                .answer(answer.getAnswer())
+                .question(question.getQuestion())
+                .answerId(String.valueOf(answer.getId()))
+                .score(String.valueOf(question.getScore()))
+                .id(String.valueOf(studentExamId))
                 .build();
     }
 

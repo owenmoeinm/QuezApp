@@ -1,6 +1,7 @@
 package ir.mrmoein.quezapplication.repository.elastic;
 
 import ir.mrmoein.quezapplication.model.document.TeacherDoc;
+import ir.mrmoein.quezapplication.model.entity.State;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
 import java.util.List;
@@ -18,5 +19,7 @@ public interface SearchTeacher extends ElasticsearchRepository<TeacherDoc, UUID>
     List<TeacherDoc> findByNationalCodeContaining(String nationalCode);
 
     void deleteByNationalCode(String nationalCode);
+
+    List<TeacherDoc> findByStatus(State status);
 
 }

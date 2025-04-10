@@ -35,6 +35,9 @@ public class ExamQuestion extends BaseEntity<Long> {
     @ManyToMany
     private List<Exam> exams;
 
+    @OneToMany(mappedBy = "examQuestion")
+    private List<AnswerQuestion> answerQuestions;
+
     @PrePersist
     public void init(){
         if (this.exams == null) {
@@ -48,6 +51,24 @@ public class ExamQuestion extends BaseEntity<Long> {
         }
         if (!this.exams.contains(exam)) {
             this.exams.add(exam);
+        }
+    }
+
+    public void addAnswer(AnswerQuestion answer) {
+        if (this.answerQuestions == null) {
+            this.answerQuestions = new ArrayList<>();
+        }
+        if (!this.answerQuestions.contains(answer)) {
+            this.answerQuestions.add(answer);
+        }
+    }
+
+    public void addOption(Option option) {
+        if (this.options == null) {
+            this.options = new ArrayList<>();
+        }
+        if (!this.options.contains(option)) {
+            this.options.add(option);
         }
     }
 }

@@ -17,13 +17,12 @@ document.querySelectorAll(".convert").forEach(button => {
             .then(data => {
                 console.log('نتیجه سرور:', data);
 
-                // دکمه‌ای که کلیک شده را تغییر دهید
                 const convertButton = event.target;
                 convertButton.classList.replace("btn-danger", "btn-success");
                 convertButton.textContent = "تأیید شد";
                 convertButton.disabled = true;
 
-                location.reload(); // اگر واقعاً نیاز است صفحه رفرش شود
+                location.reload();
             })
             .catch(error => {
                 console.error('خطا:', error);

@@ -24,4 +24,11 @@ public interface ExamService {
 
     void removeQuestion(String id , String exam);
 
+    List<StudentsExamDTO> getStudentsExams(String exam);
+
+    List<QuestionCorrectionDTO> getQuestionCorrections(ExamCorrectionRequestDTO requestDTO);
+
+    void correctionForm(List<RequestSubmitCorrection> correction);
+
+
 }

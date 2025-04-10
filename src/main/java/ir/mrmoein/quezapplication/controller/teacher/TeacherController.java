@@ -1,9 +1,6 @@
 package ir.mrmoein.quezapplication.controller.teacher;
 
-import ir.mrmoein.quezapplication.model.dto.CoursesTeacherDTO;
-import ir.mrmoein.quezapplication.model.dto.EditionProfileDTO;
-import ir.mrmoein.quezapplication.model.dto.StudentCardDTO;
-import ir.mrmoein.quezapplication.model.dto.TeacherProfileDTO;
+import ir.mrmoein.quezapplication.model.dto.*;
 import ir.mrmoein.quezapplication.service.CourseService;
 import ir.mrmoein.quezapplication.service.TeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/teacher")
+@PreAuthorize("hasRole('ROLE_TEACHER')")
 public class TeacherController {
 
     private CourseService courseService;
@@ -42,13 +40,11 @@ public class TeacherController {
     }
 
     @GetMapping("/home")
-    @PreAuthorize("hasRole('ROLE_TEACHER')")
     public ModelAndView home() {
         return new ModelAndView("teacher");
     }
 
     @GetMapping("/profile")
-    @PreAuthorize("hasRole('ROLE_TEACHER')")
     public ModelAndView profile(){
         return new ModelAndView("profile");
     }
@@ -66,9 +62,9 @@ public class TeacherController {
     }
 
     @GetMapping("/students/page")
-    @PreAuthorize("hasRole('ROLE_TEACHER')")
     public ModelAndView page() {
         return new ModelAndView("students_page");
     }
+
 
 }
