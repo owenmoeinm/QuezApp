@@ -1,6 +1,5 @@
 package ir.mrmoein.quezapplication.util;
 
-import ir.mrmoein.quezapplication.controller.admin.AdminController;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
