@@ -21,8 +21,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class UserController {
 
     private final UserService service;
-    private final Logger logger = LoggerFactory.getLogger(UserController.class);
-
 
     @Autowired
     public UserController(UserService service) {
@@ -52,7 +50,6 @@ public class UserController {
     @PostMapping(value = "/student", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public String student(@ModelAttribute StudentRegisterRequest registerRequest , Model model) {
         if (service.registerStudent(registerRequest)) {
-            logger.info("student {} Register and Pending confirmation", registerRequest.getUsername());
             model.addAttribute("info" , true);
             return "redirect:/login";
         } else {
@@ -64,7 +61,6 @@ public class UserController {
     @PostMapping(value = "/teacher", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public String teacher(@ModelAttribute TeacherRegisterRequest registerRequest , RedirectAttributes redirectAttributes) {
         if (service.registerTeacher(registerRequest)) {
-            logger.info("teacher {} Register and Pending confirmation", registerRequest.getUsername());
             redirectAttributes.addAttribute("info" , true);
             return "redirect:/login";
         } else {
